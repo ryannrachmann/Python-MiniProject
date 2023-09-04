@@ -1,0 +1,117 @@
+#Extract all odd numbers from arr
+import numpy as np
+arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+arr[arr%2 ==1]
+
+#Convert a 1D array to a 2D array with 2 rows
+a = np.arange(10)
+a.reshape(2,5)
+
+#Stack arrays a and b vertically
+a = np.arange(10).reshape(2,-1)
+b = np.repeat(1, 10).reshape(2,-1)
+np.vstack((a,b))
+
+#Swap columns 1 and 2 in the array arr.
+#Input
+arr = np.arange(9).reshape(3,3)
+arr
+#Code
+arr[:,[0, 1]] = arr[:,[1, 0]]
+arr
+
+#Replace all odd numbers in arr with -1
+#Input
+arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+#Code
+arr[arr%2 ==1] = -1
+arr
+
+#Convert a 1-D array to a 3-D array
+#Input
+a = np.array([x for x in range(27)])
+#Code
+b = a.reshape(3,3,3)
+print(b)
+
+#Output the transpose of a matrix (as numpy array)
+#Input
+a = np.array([[11,32,53],
+              [64,25,16],
+              [47,28,39]])
+#Code
+transp = np.array(a).transpose()
+print(transp)
+
+#Add 2 arrays
+#Input
+a = np.array([[1,2,3],
+              [4,5,6]])
+b = np.array([[10,11,12],
+              [13,14,15]])
+#Code
+c = np.add(a, b)
+print(c)
+
+#Complete the task
+# Berikan 2 ke variable apple_price
+apple_price = 2
+
+# Berikan 5 ke variable count
+count = 5
+
+# Berikan hasil dari apple_price * count ke variable total_price
+total_price = apple_price * count
+
+# Dengan menggunakan variable count, cetak 'Anda akan membeli .. apel'
+#CODE HERE
+print(f"Anda akan membeli {count} apel")
+
+# Dengan menggunakan variable total_price, cetak 'Harga total adalah .. dolar'
+#CODE HERE
+print(f"Harga total adalah {total_price} dollar")
+
+#
+items = {"nama_barang":"apel","deskripsi":[{
+    "harga":20,
+    "foto":"assets/images/apple.jpg",
+    "qty":100
+}], "nama_barang":"jeruk","deskripsi":[{
+    "harga":25,
+    "foto":"assets/images/jeruk.jpg",
+    "qty":150
+}] }
+
+
+#Berikan 20 ke variable money
+money = 20
+
+items = {'apel': 2, 'pisang': 4, 'jeruk': 6}
+for item_name in items:
+    print(items)
+    # Menggunakan variable money, cetak 'Anda memiliki ___ dolar di dompet Anda'
+    #CODE HERE
+    print("Anda memiliki {} dollar didompet anda".format(money))
+
+    #CODE BELOW
+    print('Harga setiap ' + item_name + ' ' + str(items[item_name]) + ' dolar')
+
+    input_count = input('Mau berapa ' + item_name + '?:')
+    print('Anda akan membeli' , input_count , item_name)
+
+    count = int(input_count)
+    total_price = items[item_name] * count
+    print('Harga total adalah ' + str(total_price) + ' dolar')
+
+
+    # Tambahkan control flow berdasarkan perbandingan dari money dan total_price
+    if(money >= total_price):
+      print("Anda telah membeli " , input_count , item_name)
+      money = money - total_price
+
+    else:
+      print("Uang Anda tidak mencukupi")
+      print("Anda tidak dapat membeli " , item_name," sebanyak itu")
+
+
+
