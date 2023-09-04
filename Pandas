@@ -1,0 +1,77 @@
+import pandas as pd
+import numpy as np
+
+#Load and read the file
+url_account_twitter_pos = 'https://drive.google.com/file/d/1fAffSVhEydpL3VngA2yYpBgEWrO0BMHR/view?usp=sharing'
+url_hashtag_twitter_pos = 'https://drive.google.com/file/d/1tvfuP3SoSci81OhEw2J5bLijUdaAqCpg/view?usp=sharing'
+url_instagram_pos = 'https://drive.google.com/file/d/1SKlwa2XnpoZ6QCQxNpL5g6lIrsapr3NK/view?usp=sharing'
+
+url_basic_drive = 'https://drive.google.com/uc?id='
+url_account_twitter_pos = url_basic_drive + url_account_twitter_pos.split('/')[-2]
+url_hashtag_twitter_pos = url_basic_drive + url_hashtag_twitter_pos.split('/')[-2]
+url_instagram_pos = url_basic_drive + url_instagram_pos.split('/')[-2]
+
+df_account_twitter_pos = pd.read_csv(url_account_twitter_pos)
+df_hashtag_twitter_pos = pd.read_csv(url_hashtag_twitter_pos)
+df_instagram_pos = pd.read_json(url_instagram_pos)
+
+#Combining twitter data
+combine = [df_account_twitter_pos, df_hashtag_twitter_pos]
+result = pd.concat(combine)
+
+#In the combined Twitter dataframe, add a datetime column, the datetime column is taken from:
+#date column
+#time column
+result['datetime'] = result['date'] + " " + result['time']
+
+#Select column:
+  #link
+  #datetime, convert it to yyyy-mm-dd h:m:s format
+  #hashtags, rename column to content
+#In the Twitter dataframe that has added a datetime column, then filter the content column that does not contain [] and don't forget to reset the index
+result['datetime'] = pd.to_datetime(result['datetime'])
+result.rename(columns = {'hashtags' : 'content'}, inplace = True)
+result_1 = result[['link','content','datetime']]
+filter_1 = result_1.loc[result_1['content'] != "[]"].reset_index()
+
+#Add a new column "source" with the value "twitter"
+filter_1.insert(4, 'source', 'twitter')
+
+#Instagram data processing
+#Select column:
+  #key, rename the column to link
+  #datetime, change value to yyyy-mm-dd h:m:s, example: 2019-07-12 09:55:09
+  #caption, rename column to content
+df_ig['datetime'] = pd.to_datetime(df_ig['datetime']).dt.tz_localize(None)
+rename_1 = {"key" : "link",
+            "caption" : "content"}
+df_ig.rename(columns = rename_1, inplace = True)
+result_ig = df_ig[['link','content','datetime']]
+
+#Add a new column "source" with the value "instagram"
+df_ig.insert(4, 'source', 'instagram')
+
+#Merge the Twitter and Instagram dataframes, then drop the duplicate data
+result_twt = filter_1[['content', 'source','datetime']].drop_duplicates()
+result_ig = df_ig[['content', 'source','datetime']].drop_duplicates()
+result_twt_ig = pd.concat([result_twt, result_ig])
+result_twt_ig.sort_values('datetime')
+
+#Group the source column then calculate the raw total
+new_twt_ig = result_twt_ig.groupby(by = "source")["content"]
+new_twt_ig = new_twt_ig.count()
+new_twt_ig = new_twt_ig.reset_index()
+
+#Add a new column year_month take the value from the datetime column with the format yyyy-mm, example 2023-07
+df_twt_ig = result_twt_ig['year_month'] = result_twt_ig['datetime'].dt.strftime('%Y-%m')
+
+#Sort by year_month ascending
+df_twt_ig = result_twt_ig.sort_values(by=['year_month'], ascending = True).reset_index(drop=True)
+
+#The final result of calculating the total raw data source from Twitter and Instagram based on the year_month column
+df_twt_ig2 = pd.pivot_table(df_twt_ig, index='year_month',
+                            columns = 'source',
+                            values = 'content', aggfunc=pd.Series.nunique)
+
+#Save dataframe to csv file (reset index first)
+df_twt_ig2.to_csv('Ryan_R_Final_Project.csv')
